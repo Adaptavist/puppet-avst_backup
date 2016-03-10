@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# script to remove control file that stops avst-backup-runner from running, therefore letting it run again
+
+CONFIG_DIR="<%= @config_dir %>"
+STOP_BACKUP_FILE="${CONFIG_DIR}/suspend_backups"
+
+if [ -f ${STOP_BACKUP_FILE} ]
+then
+    rm ${STOP_BACKUP_FILE}
+    if [ $? -eq 0 ]
+    then
+        echo "avst-backup jobs have now been resumed"
+    else
+        echo "ERROR: unable to resume avst-backup jobs as unable to remove ${STOP_BACKUP_FILE}"
+    fi
+else
+    echo "avst-backup jobs are not currently suspended, therefore no action will be taken"
+fi

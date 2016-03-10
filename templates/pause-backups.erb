@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# script to create control file that will stop the avst-backup-runner from running
+
+CONFIG_DIR="<%= @config_dir %>"
+STOP_BACKUP_FILE="${CONFIG_DIR}/suspend_backups"
+
+touch ${STOP_BACKUP_FILE}
+
+if [ $? -eq 0 ]
+then
+    echo "avst-backup jobs have now been suspended"
+else
+    echo "ERROR: unable to suspend avst-backup jobs as unable to create ${STOP_BACKUP_FILE}"
+fi

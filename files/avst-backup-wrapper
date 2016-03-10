@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# setup the RVM environment
+source /usr/local/rvm/scripts/rvm
+
+avst-backup $@

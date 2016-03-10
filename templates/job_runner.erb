@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# avst-backup hiera job runner
+
+COMMAND="<%= @wrapper %>"
+CONFIG_DIR="<%= @config_dir %>"
+COMMAND_ARGS=" --hiera_datadir \"${CONFIG_DIR}\""
+MAILUSERS="<%= @real_job_failure_email %>"
+STOP_BACKUP_FILE="${CONFIG_DIR}/suspend_backups"
+
+# function to deal with mailing error output (or printing to stdout if no email address is set)
+mailOutput() {
+   # capture the log message
+   while read data; do
+      log_data="$log_data $data\n"
+   done
+
+   # if there is an alert email address send a mail
+   if [ ! -z ${MAILUSERS} ]
+   then
+       echo -e "$log_data" | mail -s "Error running backup job ${JOB_NAME}" ${MAILUSERS}
+   fi
+}
+
+# find all the job files and run them
+for JOB in $(<%= @job_filter %>)
+do
+  JOB_FILE=$(basename ${JOB})
+  JOB_NAME=${JOB_FILE%.*}
+  SUB_COMMANDS=$(grep \#commands= ${JOB} | sed 's/#commands=//g')
+  RUN="${COMMAND} ${JOB_NAME} \"${SUB_COMMANDS}\" ${COMMAND_ARGS}"
+  LOG_FILE="<%= @real_job_log_file %>"
+  
+  # if it is set make sure the log file base directory exists
+  if [ ! -z ${LOG_FILE} ]
+  then
+    LOG_DIR=$(dirname ${LOG_FILE})
+    MESSAGE_OUTPUT="tee -a ${LOG_FILE}"
+    if [ ! -d ${LOG_DIR} ]
+    then
+      mkdir -p ${LOG_DIR}
+    fi
+  else
+    MESSAGE_OUTPUT="tee"
+  fi
+
+  if [ -f ${STOP_BACKUP_FILE} ]
+  then
+    (
+    echo "$(date) - Backups are currently suspended due to the presence of ${STOP_BACKUP_FILE}"
+    echo "backup job ${JOB_NAME} will thereofore be skipped" 
+    echo "========================================================================================================"
+    ) | ${MESSAGE_OUTPUT}
+  else
+    # run the command and capture stdout and stderr
+    output=$(eval ${RUN} 2>&1)
+    retval=$?
+    # if the exit code is not 0 try and send an email
+    if [ ${retval} -ne 0 ]
+    then
+      (
+      echo "Job ${JOB_NAME} has errors, full log below:"
+      echo "==========================================="
+      echo ""
+      echo "${output}"
+      echo 
+      echo 
+      ) | mailOutput
+    fi
+    
+    # log the job output to the logfile if set or stdout if not
+    (
+    echo "Log for avst-backup job ${JOB_NAME} run at $(date) below:"
+    if [ ${retval} -ne 0 ]
+    then
+      echo "***This Job contains ERRORS***"
+    fi
+    echo "====================================================="
+    echo "${output}"
+    echo ""
+    echo ""
+    ) | ${MESSAGE_OUTPUT}
+  fi
+done

@@ -1,0 +1,9 @@
+<%= @real_rotate_logs_filter %> {
+        missingok
+        <% if @logrorate_compress != "false" and @logrorate_compress != false %>
+        compress
+        <% end %>
+        notifempty
+        <%= @rotate_logs_period %>
+        rotate <%= @rotate_logs_keep %>
+}
