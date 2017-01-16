@@ -36,7 +36,7 @@ define avst_backup::hiera_backup(
     content => template("${module_name}/yaml_config.erb"),
   }
   $ensure = str2bool($create_cron) ? {
-    true = present
+    true => present,
     default => absent
   }
 
