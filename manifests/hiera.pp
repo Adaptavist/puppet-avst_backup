@@ -35,7 +35,7 @@ class avst_backup::hiera(
         validate_hash($hiera_backup_setup)
         create_resources(avst_backup::hiera_backup, $hiera_backup_setup)
     }
-    
+
     # if we are running all the hiera jobs in one cron, create it
     if ( $run_as_one_job_bool ) {
 
