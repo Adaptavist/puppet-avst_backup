@@ -30,13 +30,6 @@ class avst_backup::hiera(
     ) {
 
     $run_as_one_job_bool = str2bool($run_as_one_job)
-    $delete_unmanaged_configs_bool = str2bool($delete_unmanaged_configs)
-    # endure the config directory exists
-    file { $config_dir:
-        ensure  => 'directory',
-        purge   => $delete_unmanaged_configs_bool,
-        recurse => $delete_unmanaged_configs_bool,
-    }
 
     if str2bool($backup_hiera){
         validate_hash($hiera_backup_setup)

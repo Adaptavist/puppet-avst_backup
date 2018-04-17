@@ -3,7 +3,7 @@
 # avst-backup hiera job runner
 
 COMMAND="<%= @wrapper %>"
-CONFIG_DIR="<%= @config_dir %>"
+CONFIG_DIR="${1:-<%= @config_dir %>}"
 COMMAND_ARGS=" --hiera_datadir \"${CONFIG_DIR}\""
 MAILUSERS="<%= @real_job_failure_email %>"
 STOP_BACKUP_FILE="${CONFIG_DIR}/suspend_backups"
@@ -29,7 +29,7 @@ do
   JOB_NAME=${JOB_FILE%.*}
   SUB_COMMANDS=$(grep \#commands= ${JOB} | sed 's/#commands=//g')
   RUN="${COMMAND} ${JOB_NAME} \"${SUB_COMMANDS}\" ${COMMAND_ARGS}"
-  LOG_FILE="<%= @real_job_log_file %>"
+  LOG_FILE="${2:-<%= @real_job_log_file %>}"
   
   # if it is set make sure the log file base directory exists
   if [ ! -z ${LOG_FILE} ]

@@ -12,7 +12,8 @@ define avst_backup::hiera_backup(
   $minute           = 1,
   $cron_user        = 'root',
   $create_cron      = 'false',
-  $run_now          = 'true',
+  $run_now          = 'false',
+  $cron_command     = 'false',
   ) {
 
   $label_setup = $label ? {
@@ -30,20 +31,33 @@ define avst_backup::hiera_backup(
     default => "--timestamp_format \"${timestamp_format}\""
   }
 
+  $delete_unmanaged_configs_bool = str2bool($avst_backup::hiera::delete_unmanaged_configs)
+  
+  # endure the config directory exists
+  if !defined(File[$hiera_datadir]) {
+    file { $hiera_datadir:
+      ensure  => 'directory',
+      purge   => $delete_unmanaged_configs_bool,
+      recurse => $delete_unmanaged_configs_bool,
+    }
+  }
+
   # crete a hiera config file for this job, the template just converts the hiera_config hash back into YAML
   file { "${hiera_datadir}/${name}.yaml":
     ensure  => 'present',
     content => template("${module_name}/yaml_config.erb"),
-  }
-  $ensure = str2bool($create_cron) ? {
-    true = present
-    default => absent
+    require => File[$hiera_datadir]
   }
 
-  $run_command="${wrapper} ${name} \"${backup_commands}\" ${hiera_datadir_flag} ${timestamp_format_flag}"
+  if ( $cron_command == 'false' or $cron_command == false ) {
+    $run_command="${wrapper} ${name} \"${backup_commands}\" ${hiera_datadir_flag} ${timestamp_format_flag}"
+  }
+  else {
+    $run_command = $cron_command
+  }
 
   # if this job is set to run as a cron and hiera jobs are not set to run as one create the cron job
-  if ( !str2bool($avst_backup::hiera::run_as_one_job) ) {
+  if ( !str2bool($avst_backup::hiera::run_as_one_job) or str2bool($create_cron) ) {
     cron {
       "backup_hiera_${name}_cronjob":
         ensure   => $ensure,
