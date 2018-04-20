@@ -29,30 +29,30 @@ class avst_backup::yaml(
         package {
             'at':
                 ensure => installed,
-        } ->
-        service {
+        }
+        -> service {
             'atd':
                 ensure => running,
                 enable => true,
-        } ->
-        file { $backup_access_user_private_key_folder:
+        }
+        -> file { $backup_access_user_private_key_folder:
             ensure => directory,
             owner  => $real_user,
             group  => $backup_access_group,
             mode   => '0600',
-        } ->
-        file { $backup_access_user_private_key_path:
+        }
+        -> file { $backup_access_user_private_key_path:
             ensure  => file,
             owner   => $real_user,
             content => $backup_access_user_private_key,
             group   => $backup_access_group,
             mode    => '0600',
-        } ->
-        file { '/tmp/run_restore.sh':
+        }
+        -> file { '/tmp/run_restore.sh':
             ensure  => file,
             content => inline_template('<%= "#{@restore_command}\n#{@report_state}" %>'),
-        } ->
-        exec {
+        }
+        -> exec {
             'execute_avst_backup_command_based_on_yaml_config':
                 command   => 'at -f /tmp/run_restore.sh now',
                 logoutput => on_failure,

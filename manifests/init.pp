@@ -20,15 +20,15 @@ class avst_backup(
             source => "puppet:///modules/${module_name}/avst-backup-wrapper",
           }
 
-          anchor { 'avst_backup::begin': } ->
-          class { 'avst_backup::package': } ->
-          class { 'avst_backup::database': } ->
-          class { 'avst_backup::svn': } ->
-          class { 'avst_backup::ldap': } ->
-          class { 'avst_backup::filesystem': } ->
-          class { 'avst_backup::hiera': } ->
-          class { 'avst_backup::yaml': } ->
-          anchor { 'avst_backup::end': }
+          anchor { 'avst_backup::begin': }
+          -> class { 'avst_backup::package': }
+          -> class { 'avst_backup::database': }
+          -> class { 'avst_backup::svn': }
+          -> class { 'avst_backup::ldap': }
+          -> class { 'avst_backup::filesystem': }
+          -> class { 'avst_backup::hiera': }
+          -> class { 'avst_backup::yaml': }
+          -> anchor { 'avst_backup::end': }
         }
         'absent': {
           class { 'avst_backup::uninstall': }

@@ -32,7 +32,7 @@ define avst_backup::hiera_backup(
   }
 
   $delete_unmanaged_configs_bool = str2bool($avst_backup::hiera::delete_unmanaged_configs)
-  
+
   # endure the config directory exists
   if !defined(File[$hiera_datadir]) {
     file { $hiera_datadir:
