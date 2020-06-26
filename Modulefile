@@ -1,5 +1,5 @@
 name 'adaptavist-avst_backup'
-version '1.0.1'
+version '1.0.2'
 source 'https://github.com/Adaptavist/puppet-avst_backup.git'
 author 'adaptavist'
 summary 'stunnel Module'
@@ -8,3 +8,4 @@ the avst-backup application to provide backup of database, svn, ldap and filesys
 
 ## Add dependencies, if any:
 dependency 'puppetlabs/stdlib', '>= 2.4.0'
+dependency 'puppetlabs/cron_core ', '>= 1.0.4'

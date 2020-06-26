@@ -1,11 +1,16 @@
 require 'spec_helper'
  
-describe 'avst_backup', :type => 'class' do
+describe 'avst_backup::yaml', :type => 'class' do
   
   real_user = 'restore_user'
   backup_access_group = 'staff'
   context "Should setup system as restore" do
-    let(:params) { {:backup_yaml => "true"} }
+    let(:params) {{
+      :backup_yaml => "true", 
+      # set the dependancy to something inside the class to limit the scope needed for rspec test
+      :deps=> 'File[/tmp/run_restore.sh]'
+    }}
+
     it do
       should contain_file('/etc/puppet/files/avst_backup/keys/backup').with(
         'ensure' => 'directory',
