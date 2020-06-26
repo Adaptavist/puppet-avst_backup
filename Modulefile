@@ -1,5 +1,5 @@
 name 'adaptavist-avst_backup'
-version '1.0.1'
+version '1.0.2'
 source 'https://github.com/Adaptavist/puppet-avst_backup.git'
 author 'adaptavist'
 summary 'stunnel Module'
