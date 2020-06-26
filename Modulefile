@@ -8,3 +8,4 @@ the avst-backup application to provide backup of database, svn, ldap and filesys
 
 ## Add dependencies, if any:
 dependency 'puppetlabs/stdlib', '>= 2.4.0'
+dependency 'puppetlabs/cron_core ', '>= 1.0.4'

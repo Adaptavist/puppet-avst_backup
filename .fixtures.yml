@@ -2,5 +2,7 @@ fixtures:
   repositories:
     stdlib:
       repo: "https://github.com/Adaptavist/puppet-stdlib"
+    cron_core:
+      repo: "https://github.com/Adaptavist/puppetlabs-cron_core"
   symlinks:
     avst_backup: "#{source_dir}"
